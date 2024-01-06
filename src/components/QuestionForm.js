@@ -1,6 +1,12 @@
 import React, { useState } from "react";
 
-function QuestionForm(props) {
+function QuestionForm({childAction,questions}) {
+  let idArray=[];
+
+  for(const item of questions) {
+    idArray.push(item.id);
+  }
+
   const [formData, setFormData] = useState({
     prompt: "",
     answer1: "",
@@ -19,7 +25,25 @@ function QuestionForm(props) {
 
   function handleSubmit(event) {
     event.preventDefault();
-    console.log(formData);
+    let answersArray = [formData.answer1,formData.answer2,formData.answer3,formData.answer4];
+
+    fetch("http://localhost:4000/questions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        "id": Math.max(idArray)+1,
+        "prompt": formData.prompt,
+        "answers": answersArray,
+        "correctIndex": formData.correctIndex
+      })
+    })
+    .then((response)=>response.json())
+    .catch(error=>{
+      console.error(error);
+    })
+
   }
 
   return (
